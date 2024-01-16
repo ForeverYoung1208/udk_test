@@ -6,6 +6,7 @@ import config from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './modules/posts/posts.module';
 import { PostsController } from './modules/posts/posts.controller';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -22,6 +23,11 @@ import { PostsController } from './modules/posts/posts.controller';
         console.log('[databaseConfig]', { ...databaseConfig, password: '***' });
         return databaseConfig;
       },
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => configService.get('redis')
     }),
     PostsModule,
   ],
