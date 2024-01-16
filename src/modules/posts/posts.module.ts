@@ -9,7 +9,7 @@ import { PostsProcessor } from './queue/posts.processors';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Post]),
-    BullModule.registerQueue({ name: 'posts', processors:  }),
+    BullModule.registerQueue({ name: 'posts' }),
   ],
   providers: [PostsController, PostsService, PostsProcessor],
   exports: [PostsController, PostsService],

@@ -36,9 +36,9 @@ lerna-debug.log*
 
 # data
 
-./docker/db
-./docker/db_test
-./docker/cache
+docker/db/
+docker/db_test/
+docker/cache/
 
 #
 .env
