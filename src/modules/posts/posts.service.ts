@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Post } from '../../entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,7 +23,7 @@ export class PostsService {
 
   async jobCreate(createPostDto: CreatePostDto): Promise<void> {
     const quedPost = await this.postsQueue.add(createPostDto);
-    console.log('------STARTED----------');
-    console.dir(quedPost);
+    Logger.debug(`------Job ${quedPost.id} created----------`);
+    console.dir(quedPost.data);
   }
 }
