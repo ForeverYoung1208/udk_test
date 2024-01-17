@@ -1,7 +1,6 @@
 import { Body, Controller, HttpStatus, Logger, Post } from '@nestjs/common';
 import { CreatePostDto } from './dtos/createPost.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreatePostResponce } from './responces/createPost.responce';
 import { PostsService } from './posts.service';
 
 @Controller()

@@ -14,7 +14,14 @@ export class PostsService {
     @InjectQueue('posts')
     private postsQueue: Queue,
   ) {}
-  async create(createPostDto: CreatePostDto): Promise<void> {
+
+  async create(post: CreatePostDto): Promise<Post> {
+    return this.postsRepositry.save(post);
+  }
+
+  // JOB starters
+
+  async jobCreate(createPostDto: CreatePostDto): Promise<void> {
     const quedPost = await this.postsQueue.add(createPostDto);
     console.log('------STARTED----------');
     console.dir(quedPost);
