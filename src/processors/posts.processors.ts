@@ -8,9 +8,9 @@ export class PostsProcessor {
   constructor(private readonly postsService: PostsService) {}
   @Process()
   async processPost(job: Job<CreatePostDto>) {
-    const res = await this.postsService.create(job.data);
     console.log(`started job ${job.id}`);
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 8000));
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
+    const res = await this.postsService.create(job.data);
     console.log('job ---------DONE-----------: ', res);
   }
 }
