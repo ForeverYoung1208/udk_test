@@ -4,7 +4,7 @@ import { Post } from '../../entities/post.entity';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { BullModule } from '@nestjs/bull';
-import { PostsProcessor } from './queue/posts.processors';
+import { PostsProcessor } from '../../processors/posts.processors';
 
 @Module({
   imports: [
