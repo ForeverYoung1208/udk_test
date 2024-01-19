@@ -14,13 +14,13 @@ export class PostsProcessor {
   async processPost(job: Job<CreatePostDto>) {
     console.log(`started job processor for job id  ${job.id}`);
     const isWorker = this.confingService.get('IS_WORKER');
-    if (isWorker) {
+    if (isWorker === 'true') {
       console.log('worker is running');
       await new Promise<void>((resolve) => setTimeout(() => resolve(), 8000));
       const res = await this.postsService.create(job.data);
       console.log('job ---------DONE-----------: ', res);
     } else {
-      console.log('worker is not running, keep work for worker');
+      console.log('it is not a worker, keep work for worker');
     }
   }
 }
