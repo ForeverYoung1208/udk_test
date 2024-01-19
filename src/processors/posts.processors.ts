@@ -21,6 +21,7 @@ export class PostsProcessor {
       console.log('job ---------DONE-----------: ', res);
     } else {
       console.log('it is not a worker, keep work for worker');
+      return Promise.reject('it is not a worker, keep work for worker');
     }
   }
 }
