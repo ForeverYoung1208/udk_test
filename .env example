@@ -19,9 +19,10 @@ DB_DATABASE_TEST=UDK2_test
 DB_USERNAME_TEST=postgres_test
 DB_PASSWORD_TEST=asdfasdf_test
 
-# Redis
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
+
+IS_WORKER=false
 
 # TypeOrm configuration
 TYPEORM_LOGGING=true

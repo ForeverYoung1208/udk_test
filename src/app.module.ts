@@ -28,7 +28,11 @@ import { PostsProcessor } from './processors/posts.processors';
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => configService.get('redis'),
+      useFactory: (configService: ConfigService) => {
+        const redisConfig = configService.get('redisConfig');
+        console.log('[redisConfig]', redisConfig);
+        return redisConfig;
+      },
     }),
     PostsModule,
   ],
