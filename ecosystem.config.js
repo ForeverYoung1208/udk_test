@@ -5,6 +5,19 @@ module.exports = {
       script: './dist/main.js',
       instances: 2,
       watch: true,
-    },
+      env: {
+          "NODE_ENV": "staging",
+          "IS_WORKER": "false",
+      },
+    },{
+      name: 'udk_worker',
+      script: './dist/main.js',
+      instances: 2,
+      watch: true,
+      env: {
+          "NODE_ENV": "staging",
+          "IS_WORKER": "true",
+      },
+    }
   ],
 };
