@@ -1,31 +1,21 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Injectable, Logger } from '@nestjs/common';
 import { Post } from '../../entities/post.entity';
 import { CreatePostDto } from './dtos/createPost.dto';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
+import { ModuleRef } from '@nestjs/core';
+import { getEntityManagerToken } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class PostsService {
-  private readonly postsRepositry: Repository<Post>;
-  constructor(
-    @Inject('data_source')
-    private readonly dataSource: DataSource,
-    @InjectQueue('posts')
-    private postsQueue: Queue,
-  ) {
-    this.postsRepositry = dataSource.getRepository(Post);
+  constructor(private moduleRef: ModuleRef) {}
+  private async loadEntityManager(tenantName: string): Promise<EntityManager> {
+    return this.moduleRef.get(getEntityManagerToken(`db-${tenantName}`), {
+      strict: false,
+    });
   }
 
   async create(post: CreatePostDto): Promise<Post> {
-    return this.postsRepositry.save(post);
-  }
-
-  // JOB starters
-
-  async jobCreate(createPostDto: CreatePostDto): Promise<void> {
-    const quedPost = await this.postsQueue.add(createPostDto);
-    Logger.debug(`------Job ${quedPost.id} created----------`);
-    console.dir(quedPost.data);
+    const em = await this.loadEntityManager('main');
+    return await em.save(Post, post);
   }
 }
