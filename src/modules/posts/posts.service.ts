@@ -15,7 +15,7 @@ export class PostsService {
   }
 
   async create(post: CreatePostDto): Promise<Post> {
-    const em = await this.loadEntityManager('main');
+    const em = await this.loadEntityManager('TENANT1');
     return await em.save(Post, post);
   }
 }

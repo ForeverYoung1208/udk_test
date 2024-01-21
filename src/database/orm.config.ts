@@ -9,8 +9,7 @@ export const getTenantNames = (): string[] => {
 export default registerAs('orm', () => {
   const config = {};
 
-  // const entitiesPath = __dirname + '/../../**/*.entity{.ts,.js}';
-  const entitiesPath = '{dist,src}/entites/*.entity{.ts,.js}';
+  const entitiesPath = __dirname + '/../../**/*.entity.js';
 
   getTenantNames().forEach((tenantName) => {
     config[tenantName] = {
