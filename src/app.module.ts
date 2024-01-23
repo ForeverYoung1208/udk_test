@@ -5,7 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './modules/posts/posts.module';
-import { PostsController } from './modules/posts/posts.controller';
 import { BullModule } from '@nestjs/bull';
 import { PostsProcessor } from './processors/posts.processors';
 
@@ -35,8 +34,9 @@ import { PostsProcessor } from './processors/posts.processors';
       },
     }),
     PostsModule,
+    BullModule.registerQueue({ name: 'posts' }),
   ],
-  controllers: [AppController, PostsController],
+  controllers: [AppController],
   providers: [AppService, PostsProcessor],
 })
 export class AppModule {}

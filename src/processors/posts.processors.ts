@@ -15,7 +15,7 @@ export class PostsProcessor {
     console.log(`started job processor for job id  ${job.id}`);
     const isWorker = this.confingService.get('IS_WORKER');
     if (isWorker === 'true') {
-      console.log('worker is running');
+      console.log('worker has picked a job');
       await new Promise<void>((resolve) => setTimeout(() => resolve(), 8000));
       const res = await this.postsService.create(job.data);
       console.log('job ---------DONE-----------: ', res);

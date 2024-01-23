@@ -22,7 +22,7 @@ export class PostsService {
   // JOB starters
 
   async jobCreate(createPostDto: CreatePostDto): Promise<void> {
-    const quedPost = await this.postsQueue.add(createPostDto);
+    const quedPost = await this.postsQueue.add(createPostDto, { attempts: 10 });
     Logger.debug(`------Job ${quedPost.id} created----------`);
     console.dir(quedPost.data);
   }

@@ -12,5 +12,6 @@ import { BullModule } from '@nestjs/bull';
   ],
   providers: [PostsController, PostsService],
   exports: [PostsController, PostsService],
+  controllers: [PostsController],
 })
 export class PostsModule {}
