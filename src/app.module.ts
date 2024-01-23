@@ -34,9 +34,8 @@ import { PostsProcessor } from './processors/posts.processors';
       },
     }),
     PostsModule,
-    BullModule.registerQueue({ name: 'posts' }),
   ],
   controllers: [AppController],
-  providers: [AppService, PostsProcessor],
+  providers: [AppService],
 })
 export class AppModule {}
