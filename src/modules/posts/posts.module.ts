@@ -9,7 +9,6 @@ import { DatabaseModule } from '../../database/database.module';
 @Module({
   imports: [
     DatabaseModule.register(Scope.REQUEST),
-    // TypeOrmModule.forFeature([Post]),
     BullModule.registerQueue({ name: 'posts' }),
   ],
   providers: [PostsController, PostsService],

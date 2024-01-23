@@ -16,7 +16,6 @@ export default class DataSourceManager {
   }
 
   public async getDataSource(dataSourceName: string): Promise<DataSource> {
-    //todo: stopped here
     if (this.dataSources[dataSourceName]) {
       const dataSource = this.dataSources[dataSourceName];
       return Promise.resolve(
@@ -24,7 +23,7 @@ export default class DataSourceManager {
       );
     }
     console.log('Initializing new data source', dataSourceName);
-    const newDataSource = allDataSources[dataSourceName];
+    const newDataSource = allDataSources[dataSourceName].default;
     this.dataSources[dataSourceName] = newDataSource;
     return Promise.resolve(newDataSource.initialize());
   }

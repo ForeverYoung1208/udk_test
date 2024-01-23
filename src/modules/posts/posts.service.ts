@@ -18,7 +18,8 @@ export class PostsService {
   }
 
   async create(post: CreatePostDto): Promise<Post> {
-    return this.postsRepositry.save(post);
+    const newPost = await this.postsRepositry.save(post);
+    return newPost;
   }
 
   // JOB starters
