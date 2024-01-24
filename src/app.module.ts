@@ -5,7 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './modules/posts/posts.module';
-import { PostsController } from './modules/posts/posts.controller';
 import { BullModule } from '@nestjs/bull';
 import { PostsProcessor } from './processors/posts.processors';
 
@@ -36,7 +35,7 @@ import { PostsProcessor } from './processors/posts.processors';
     }),
     PostsModule,
   ],
-  controllers: [AppController, PostsController],
-  providers: [AppService, PostsProcessor],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
