@@ -49,7 +49,7 @@ services:
         ipv4_address: 10.2.1.4
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@test.test
+      PGADMIN_DEFAULT_EMAIL: test@admin.org
       PGADMIN_DEFAULT_PASSWORD: asdfasdf
     ports:
       - 8105:80
@@ -64,9 +64,77 @@ services:
     restart: always
     ports:
       - 6379:6379
-    command: redis-server --save 20 1 
+    command: redis-server --save 60 1 
     volumes: 
       - ./cache:/data
+
+  api_udk:
+    container_name: udk2_api    
+    depends_on:
+      - postgres_udk
+      - redis_udk
+    build:
+        context: ../
+        dockerfile: Dockerfile
+    networks:
+      par_net:
+        ipv4_address: 10.2.1.1
+    environment:
+      NODE_ENV: local
+      PORT: "3001"
+      DB_HOST: postgres_udk
+      DB_HOST_TEST: postgres_test
+      DB_PORT: "5432"
+      DB_PORT_TEST: "54321"
+      DB_DATABASE: UDK2
+      DB_USERNAME: postgres
+      DB_PASSWORD: asdfasdf
+      REDIS_HOST: redis_udk
+      REDIS_PORT: "6379"
+      TYPEORM_ENTITIES: src/entities/**/*entity.ts
+      TYPEORM_MIGRATIONS: src/DB/migrations/**/*.ts
+      TYPEORM_LOGGING: true
+      IS_WORKER: false
+      SITE_ORIGIN: http://localhost:4000
+    ports:
+      - "3001:3001"
+    command: >
+      bash -c "yarn install --frozen-lockfile
+      && yarn migration:run
+      && yarn start -w"
+    restart: always
+
+  worker:
+    container_name: udk2_worker    
+    depends_on:
+      - api_udk
+      - postgres_udk
+      - redis_udk
+    image: docker-api_udk:latest
+    networks:
+      par_net:
+        ipv4_address: 10.2.1.11
+    restart: always
+    environment:
+      NODE_ENV: local
+      PORT: "3001"      
+      DB_HOST: postgres_udk
+      DB_HOST_TEST: postgres_test
+      DB_PORT: "5432"
+      DB_PORT_TEST: "54321"
+      DB_DATABASE: UDK2
+      DB_USERNAME: postgres
+      DB_PASSWORD: asdfasdf
+      REDIS_HOST: redis_udk
+      REDIS_PORT: "6379"
+      TYPEORM_ENTITIES: src/entities/**/*entity.ts
+      TYPEORM_MIGRATIONS: src/DB/migrations/**/*.ts
+      TYPEORM_LOGGING: true
+      IS_WORKER: true
+      SITE_ORIGIN: http://localhost:4000      
+    command: >
+      bash -c "yarn start -w"
+
 
 volumes:
   db:
@@ -74,35 +142,4 @@ volumes:
   db_test:
     driver: local
   cache:
-    driver: local
-    
-
-  # api:
-  #   container_name: udk2_api    
-  #   depends_on:
-  #     - postgres_udk
-  #     - redis_udk
-  #   build:
-  #       context: ../
-  #       dockerfile: Dockerfile
-  #   networks:
-  #     par_net:
-  #       ipv4_address: 10.2.1.1
-  #   restart: always
-  #   environment:
-  #     PORT: 3001
-  #     DB_HOST: postgres_udk
-  #     DB_HOST_TEST: postgres_test
-  #     DB_PORT: 5432
-  #     DB_PORT_TEST: 54321
-  #     DB_DATABASE: UDK2
-  #     DB_USERNAME: postgres
-  #     DB_PASSWORD: asdfasdf
-  #     REDIS_HOST: cache
-  #     REDIS_PORT: 6379
-  #     TYPEORM_ENTITIES: src/entities/**/*entity.ts
-  #     TYPEORM_MIGRATIONS: src/DB/migrations/**/*.ts
-  #     TYPEORM_LOGGING: true      
-  #   ports:
-  #     - "3001:3001"
-       
+    driver: local       

@@ -6,7 +6,6 @@ import config from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './modules/posts/posts.module';
 import { BullModule } from '@nestjs/bull';
-import { PostsProcessor } from './processors/posts.processors';
 
 @Module({
   imports: [
