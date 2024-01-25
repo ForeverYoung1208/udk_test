@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Post } from '../../entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,13 +14,16 @@ export class PostsService {
     @InjectQueue('posts')
     private postsQueue: Queue,
   ) {}
-  async create(createPostDto: CreatePostDto): Promise<Post> {
-    const res = await this.postsRepositry.save(createPostDto);
-    console.dir(res);
-    this;
-    const quedPost = await this.postsQueue.add(createPostDto);
-    console.log('------STARTED----------');
-    console.dir(quedPost);
-    return res;
+
+  async create(post: CreatePostDto): Promise<Post> {
+    return this.postsRepositry.save(post);
+  }
+
+  // JOB starters
+
+  async jobCreate(createPostDto: CreatePostDto): Promise<void> {
+    const quedPost = await this.postsQueue.add(createPostDto, { attempts: 10 });
+    Logger.debug(`------Job ${quedPost.id} created----------`);
+    console.dir(quedPost.data);
   }
 }

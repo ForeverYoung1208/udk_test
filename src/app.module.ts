@@ -5,8 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './modules/posts/posts.module';
-import { PostsController } from './modules/posts/posts.controller';
 import { BullModule } from '@nestjs/bull';
+import { PostsProcessor } from './processors/posts.processors';
 
 @Module({
   imports: [
@@ -27,11 +27,15 @@ import { BullModule } from '@nestjs/bull';
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => configService.get('redis')
+      useFactory: (configService: ConfigService) => {
+        const redisConfig = configService.get('redisConfig');
+        console.log('[redisConfig]', redisConfig);
+        return redisConfig;
+      },
     }),
     PostsModule,
   ],
-  controllers: [AppController, PostsController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
