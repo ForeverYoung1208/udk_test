@@ -1,0 +1,145 @@
+version: '2'
+networks:
+  par_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.2.0.0/16
+
+services:
+  postgres_udk:
+    build:
+        context: postgres
+        dockerfile: Dockerfile
+    networks:
+      par_net:
+        ipv4_address: 10.2.1.2
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: asdfasdf
+      POSTGRES_DB: UDK2
+    ports:
+      - "5432:5432"
+    volumes:
+    - ./db:/var/lib/postgresql/data 
+      
+  # postgres_test:
+  #   build:
+  #       context: postgres
+  #       dockerfile: Dockerfile
+  #   networks:
+  #     par_net:
+  #       ipv4_address: 10.2.1.3
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: postgres_test
+  #     POSTGRES_PASSWORD: asdfasdf_test
+  #     POSTGRES_DB: UDK2_test
+  #   ports:
+  #     - "54321:5432"
+  #   volumes:
+  #   - ./db_test:/var/lib/postgresql/data 
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    networks:
+      par_net:
+        ipv4_address: 10.2.1.4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: test@admin.org
+      PGADMIN_DEFAULT_PASSWORD: asdfasdf
+    ports:
+      - 8105:80
+    depends_on:
+      - postgres_udk
+  
+  redis_udk:
+    image: redis:7.2.4
+    networks:
+      par_net:
+        ipv4_address: 10.2.1.10
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 60 1 
+    volumes: 
+      - ./cache:/data
+
+  api_udk:
+    container_name: udk2_api    
+    depends_on:
+      - postgres_udk
+      - redis_udk
+    build:
+        context: ../
+        dockerfile: Dockerfile
+    networks:
+      par_net:
+        ipv4_address: 10.2.1.1
+    environment:
+      NODE_ENV: local
+      PORT: "3001"
+      DB_HOST: postgres_udk
+      DB_HOST_TEST: postgres_test
+      DB_PORT: "5432"
+      DB_PORT_TEST: "54321"
+      DB_DATABASE: UDK2
+      DB_USERNAME: postgres
+      DB_PASSWORD: asdfasdf
+      REDIS_HOST: redis_udk
+      REDIS_PORT: "6379"
+      TYPEORM_ENTITIES: src/entities/**/*entity.ts
+      TYPEORM_MIGRATIONS: src/DB/migrations/**/*.ts
+      TYPEORM_LOGGING: true
+      IS_WORKER: false
+      SITE_ORIGIN: http://localhost:4000
+    ports:
+      - "3001:3001"
+    command: >
+      bash -c "yarn install --frozen-lockfile
+      && yarn migration:run
+      && yarn start -w"
+    restart: always
+
+  worker:
+    container_name: udk2_worker    
+    depends_on:
+      - api_udk
+      - postgres_udk
+      - redis_udk
+    image: docker-api_udk:latest
+    networks:
+      par_net:
+        ipv4_address: 10.2.1.11
+    restart: always
+    environment:
+      NODE_ENV: local
+      PORT: "3001"      
+      DB_HOST: postgres_udk
+      DB_HOST_TEST: postgres_test
+      DB_PORT: "5432"
+      DB_PORT_TEST: "54321"
+      DB_DATABASE: UDK2
+      DB_USERNAME: postgres
+      DB_PASSWORD: asdfasdf
+      REDIS_HOST: redis_udk
+      REDIS_PORT: "6379"
+      TYPEORM_ENTITIES: src/entities/**/*entity.ts
+      TYPEORM_MIGRATIONS: src/DB/migrations/**/*.ts
+      TYPEORM_LOGGING: true
+      IS_WORKER: true
+      SITE_ORIGIN: http://localhost:4000      
+    command: >
+      bash -c "yarn start -w"
+
+
+volumes:
+  db:
+    driver: local
+  # db_test:
+  #   driver: local
+  cache:
+    driver: local       
